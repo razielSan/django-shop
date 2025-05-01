@@ -16,6 +16,13 @@ class Index(ListView):
         """Вывод родительской категории"""
         return Category.objects.filter(parent=None)
 
+    def get_context_data(self, **kwargs):
+        """ Вывод на страницу дополнительных элементов """
+        context = super().get_context_data()
+        products = Product.objects.order_by("-watched")[:8]
+        context["top_products"] = products
+        return context
+
 
 class SubCategeries(ListView):
     model = Product
@@ -23,7 +30,6 @@ class SubCategeries(ListView):
     template_name = "shop/category_page.html"
 
     def get_queryset(self):
-        print(12345)
         parent_category = Category.objects.get(slug=self.kwargs["slug"])
         sub = parent_category.subcategories.all()
         products = Product.objects.filter(category__in=sub).order_by("?")

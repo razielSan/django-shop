@@ -43,7 +43,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display_links = ["pk", "title"]
     prepopulated_fields = {"slug": ("title",)}
     inlines = (GaleryInline,)
-    readonly_fields = ["watched"]
+    # readonly_fields = ["watched"]
 
     def get_image(self, obj):
         if obj.images.all():
