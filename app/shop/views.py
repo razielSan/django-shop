@@ -51,3 +51,12 @@ class SubCategeries(ListView):
         context["category"] = parent_category
         context["title"] = parent_category.title
         return context
+
+
+class ProductPage(DetailView):
+    """ "  Вывод товаро на отдельной странице"""
+
+    model = Product
+    template_name = "shop/product_page.html"
+    context_object_name = "product"
+

@@ -86,8 +86,7 @@ class Product(models.Model):
     )
 
     def get_absolute_url(self):
-        # return reverse("product_detail", kwargs={"slug": self.slug})
-        pass
+        return reverse("product_page", kwargs={"slug": self.slug})
 
     def get_first_photo(self):
         if self.images.all():

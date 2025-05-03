@@ -1,0 +1,32 @@
+<div class="col-md-7">
+    <div class="product-content">
+        <div class="title"><h2>{{ product.title }}</h2></div>
+        <div class="ratting">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+        </div>
+        <div class="p-price">
+            <h4>Цена: {{ product.price }}</h4>
+        </div>
+        <div>
+            <h4>Размер: {{ product.size }}</h4>
+        </div>
+        <div >
+            <h4>Цвет: {{ product.color }}</h4>
+        </div>
+        <div class="p-quantity">
+            <h4>В наличии: {{ product.quantity }} шт.</h4>
+        </div>
+        <div class="p-category">
+            <h4>Категория: {{ product.category.title }}</h4>
+        </div>
+        <div class="action">
+            <a class="btn" href="#"><i class="fa fa-shopping-cart"></i>Добавить в корзину</a>
+            <a class="btn" href="#"><i class="fa fa-heart me-2"></i>Добавить в избранное</a>
+            <a class="btn" href="#"><i class="fa fa-shopping-bag"></i>Buy Now</a>
+        </div>
+    </div>
+</div>

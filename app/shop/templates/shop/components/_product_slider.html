@@ -1,0 +1,12 @@
+<div class="col-md-4">
+    <div class="product-slider-single normal-slider">
+        {% for img in product.images.all  %}
+            <img src="{{ img.image.url }}" alt="Product Image">                      
+        {% endfor %}
+    </div>
+    <div class="product-slider-single-nav normal-slider">
+        {% for img in product.images.all  %}
+            <div class="slider-nav-img"><img src="{{ img.image.url }}" alt="Product Image"></div>
+        {% endfor %}
+    </div> 
+</div>
