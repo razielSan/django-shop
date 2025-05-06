@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock title %}
+
+{% block main %}
+
+    <!-- Login Start -->
+            <div class="login">
+                {% if messages %}
+                    <div class="container">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.extra_tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                
+                {% endif %}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-6">    
+                            <div class="register-form">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h2 style="text-align: center"> Зарегистрироваться </h2>
+                                        <form action="{% url 'user_registration' %}" method="post" class="login-form" enctype="multipart/form-data" novalidate>
+                                            {% csrf_token %}  
+
+                                            <div class="form-group"> {{ user_register.username }}</div>
+                                            <div class="form-group"> {{ user_register.email }}</div>
+                                            <div class="form-group"> {{ user_register.password1 }}</div>
+                                            <div class="form-group"> {{ user_register.password2 }}</div> 
+                                            <button class="btn btn-primary" type="submit">Зарегестрироваться</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="login-form">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form action="{% url 'user_login' %}" method="POST" class="login-form" enctype="multipart/form-data" novalidate>
+                                            {% csrf_token %}  
+                                            <h2 style="text-align: center"> Войти в аккаунт </h2>
+                                            <div class="form-group"> {{ user_auth.username }}</div>
+                                            <div class="form-group"> {{ user_auth.password }}</div>
+                                            <button class="btn btn-primary" type="submit">Войти</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Login End -->
+
+{% endblock main %}

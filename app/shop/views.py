@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
+from django.contrib.auth import login, logout
+from django.contrib import messages
 
 from shop.models import Category, Product
+from shop.forms import UserAuthenticatedForm, UserRegisterForm
 
 
 class Index(ListView):
@@ -33,15 +36,15 @@ class SubCategeries(ListView):
 
         type_field = self.request.GET.get("type")
         if type_field:
-            products = Product.objects.filter(category__slug=type_field)
+            products = Product.objects.filter(category__slug=type_field)[:3]
             return products
         parent_category = Category.objects.get(slug=self.kwargs["slug"])
         sub = parent_category.subcategories.all()
-        products = Product.objects.filter(category__in=sub).order_by("?")
+        products = Product.objects.filter(category__in=sub).order_by("?")[:3]
 
         sorted_field = self.request.GET.get("sort")
         if sorted_field:
-            products = products.order_by(sorted_field)
+            products = products.order_by(sorted_field)[:3]
 
         return products
 
@@ -60,3 +63,55 @@ class ProductPage(DetailView):
     template_name = "shop/product_page.html"
     context_object_name = "product"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        product = Product.objects.get(slug=self.kwargs["slug"])
+        products = Product.objects.filter(category=product.category).exclude(
+            slug=self.kwargs["slug"]
+        )
+        products = products.order_by("?")
+        context["products"] = products
+        return context
+
+
+def login_registration(request):
+    """ Регистрация пользователя """ ""
+
+    context = {
+        "title": "Войти или Зарегестрироваться",
+        "user_auth": UserAuthenticatedForm,
+        "user_register": UserRegisterForm,
+    }
+    return render(request, "shop/login_registration.html", context)
+
+
+def user_login(request):
+    """ Аутентификация пользователя """
+    form = UserAuthenticatedForm(data=request.POST)
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        messages.success(request, "Вы успешно вошли в аккаунт", extra_tags="success")
+        return redirect("index")
+    else:
+        messages.error(request, "Не верное имя пользователя или пароль", extra_tags="danger")
+        return redirect("login_registration")
+
+
+def user_logout(request):
+    """ Выход пользователя """
+    logout(request)
+    return redirect("index")
+
+
+def user_registration(request):
+    """ Регистрация пользователя """
+    form = UserRegisterForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Вы успешно зарегестрированны", extra_tags="success")
+    else:
+        for error in form.errors:
+            messages.error(request, form.errors[error].as_text(), extra_tags="danger")
+        # messages.error(request, "Что то пошло не так", extra_tags="danger")
+    return redirect("login_registration")

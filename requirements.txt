@@ -34,6 +34,8 @@ pillow==10.4.0
     # via -r requirements.in
 platformdirs==4.3.6
     # via black
+psycopg2==2.9.4
+    # via -r requirements.in
 pycodestyle==2.12.1
     # via
     #   -r requirements.in

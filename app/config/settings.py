@@ -65,8 +65,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Подключение к sqlite
 
 DATABASES = {
     "default": {
@@ -74,6 +73,19 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+# Подлкючение к postgresql
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("NAME"),
+#         "USER": os.getenv("USER"),
+#         "PASSWORD": os.getenv("PASSWORD"),
+#         "HOST": os.getenv("HOST"),
+#         "PORT": os.getenv("PORT"),
+#     }
+# }
 
 
 # Password validation

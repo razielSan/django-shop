@@ -1,0 +1,40 @@
+<div class="product">
+    <div class="section-header">
+        <h1>Рекомендуемые продукты</h1>
+    </div>
+
+    <div class="row align-items-center product-slider product-slider-3">
+        {% for product in products  %}
+            <div class="col-lg-6">
+                {% comment %} <div class="product-item">
+                    <div class="product-title">
+                        <a href="#">{{ product.title }}</a>
+                        <div class="ratting">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="product-image">
+                        <a href="product-detail.html">
+                            <img src="{{ product.images.first.image.url}}" alt="Product Image">
+                        </a>
+                        <div class="product-action">
+                            <a href="#"><i class="fa fa-cart-plus"></i></a>
+                            <a href="#"><i class="fa fa-heart"></i></a>
+                            <a href="#"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-price">
+                        <h3><span>$</span>{{ product.price }}</h3>
+                        <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a>
+                    </div>
+                </div> {% endcomment %}
+                {% include "shop/components/_product_card.html" %}
+            </div>
+        
+        {% endfor %}
+    </div>
+</div>

@@ -11,6 +11,11 @@ def get_subcategories(category):
 
 
 @register.simple_tag()
+def get_all_parent_category():
+    return Category.objects.filter(parent=None)
+
+
+@register.simple_tag()
 def get_sorted():
     return [
         {
