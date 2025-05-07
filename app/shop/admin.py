@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from shop.models import Product, Category, Galery
+from shop.models import Product, Category, Galery, Review
 
 
 class GaleryInline(admin.TabularInline):
@@ -51,6 +51,14 @@ class ProductAdmin(admin.ModelAdmin):
         return "-"
 
     get_image.short_description = "Миниатюра"
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Отображение отзывов в админке"""
+
+    list_display = ["text", "author", "product", "created_at"]
+    readonly_fields = ["text", "author", "created_at"]
 
 
 admin.site.register(Galery)

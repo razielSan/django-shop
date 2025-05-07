@@ -2,11 +2,12 @@
     <div class="product-content">
         <div class="title"><h2>{{ product.title }}</h2></div>
         <div class="ratting">
+        {% for star in grade|get_positive_range %}
             <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
+        {% endfor %}
+        {% for star in grade|get_negative_range %}
+            <i class="far fa-star"></i>
+        {% endfor %}
         </div>
         <div class="p-price">
             <h4>Цена: {{ product.price }}</h4>

@@ -1,10 +1,12 @@
+import math
+
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth import login, logout
 from django.contrib import messages
 
 from shop.models import Category, Product
-from shop.forms import UserAuthenticatedForm, UserRegisterForm
+from shop.forms import UserAuthenticatedForm, UserRegisterForm, ReviewForms
 
 
 class Index(ListView):
@@ -71,6 +73,21 @@ class ProductPage(DetailView):
         )
         products = products.order_by("?")
         context["products"] = products
+        reviews = product.reviews.all().order_by("-pk")
+
+        # Вычисление среднего арифметического оценок ревью
+        star_reviews = product.reviews.filter(grade__gt=0)
+        list_reviews_count = []
+        grade = 0
+        for rev in star_reviews:
+            list_reviews_count.append(int(rev.grade))
+        if list_reviews_count:
+            grade = math.ceil(sum(list_reviews_count) / len(list_reviews_count))
+        context["grade"] = grade
+
+        if self.request.user.is_authenticated:
+            context["review_form"] = ReviewForms
+            context["reviews"] = reviews
         return context
 
 
@@ -115,3 +132,17 @@ def user_registration(request):
             messages.error(request, form.errors[error].as_text(), extra_tags="danger")
         # messages.error(request, "Что то пошло не так", extra_tags="danger")
     return redirect("login_registration")
+
+
+def save_review(request, product_pk):
+    """ Сохранение отзыва """
+    form = ReviewForms(data=request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.author = request.user
+        product = Product.objects.get(pk=product_pk)
+        review.product = product
+        form.save()
+        messages.success(request, "Вы успешно оставили отзыв", extra_tags="success")
+
+        return redirect("product_page", product.slug)

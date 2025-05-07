@@ -13,4 +13,5 @@ urlpatterns = [
     path("user/register", views.user_registration, name="user_registration"),
     path("user/login", views.user_login, name="user_login"),
     path("user/logout", views.user_logout, name="user_logout"),
+    path("save_review/<int:product_pk>/", views.save_review, name="save_review")
 ]

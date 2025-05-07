@@ -18,6 +18,9 @@
     {% get_all_parent_category as parent_categories%}
         <!-- Product Detail Start -->
         <div class="product-detail">
+            {% for message in messages  %}
+                <div class="alert alert-{{ message.extra_tags }}">{{ message }}</div>
+            {% endfor %}
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-8">

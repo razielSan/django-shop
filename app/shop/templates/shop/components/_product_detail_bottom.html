@@ -1,3 +1,5 @@
+{% load shop_tags %}
+
 <div class="row product-detail-bottom">
     <div class="col-lg-12">
         <ul class="nav nav-pills nav-justified">
@@ -18,42 +20,50 @@
             </div>
             <div id="reviews" class="container tab-pane fade">
                 <div class="reviews-submitted">
-                    <div class="reviewer">Phasellus Gravida - <span>01 Jan 2020</span></div>
-                    <div class="ratting">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                    </div>
-                    <p>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.
-                    </p>
+                    {% for review in reviews  %}
+                        <div class="reviewer">{{ review.author.username}} - <span>{{ review.created_at }}</span></div>
+                        <div class="ratting">
+                            {% if review.grade %}
+                                {% for star in review.grade|get_positive_range %}
+                                    <i class="fa fa-star"></i>
+                                {% endfor %}
+                                {% for star in review.grade|get_negative_range %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                            
+                            {% endif %}
+                        </div>
+                            <p>
+                                {{ review.text}}
+                            </p>
+                    {% endfor %}
                 </div>
-                <div class="reviews-submit">
-                    <h4>Give your Review:</h4>
-                    <div class="ratting">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                    </div>
-                    <div class="row form">
-                        <div class="col-sm-6">
-                            <input type="text" placeholder="Name">
+                {% if request.user.is_authenticated %}
+                    <div class="reviews-submit">
+                        <h4>Оставь свой отзыв:</h4>
+                        <div class="ratting">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
                         </div>
-                        <div class="col-sm-6">
-                            <input type="email" placeholder="Email">
-                        </div>
-                        <div class="col-sm-12">
-                            <textarea placeholder="Review"></textarea>
-                        </div>
-                        <div class="col-sm-12">
-                            <button>Submit</button>
+                        <div class="row form">
+                            <form action="{% url 'save_review' product.pk %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ review_form.as_p }}
+                                <div>
+                                    <button class='btn btn-success'>Оставить отзыв</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </div>
+                {% else %}
+                    <h4>
+                        Отзывы могут оставлять только зарегистрированные пользователи
+                    </h4>            
+                    <p><a href="{% url 'login_registration' %}">Войти/Зарегистрироваться</a></p>
+                {% endif %}
             </div>
         </div>
     </div>
