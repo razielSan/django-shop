@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth import login, logout
 from django.contrib import messages
 
-from shop.models import Category, Product
+from shop.models import Category, Product, FavoriteProducts
 from shop.forms import UserAuthenticatedForm, UserRegisterForm, ReviewForms
 
 
@@ -75,16 +75,6 @@ class ProductPage(DetailView):
         context["products"] = products
         reviews = product.reviews.all().order_by("-pk")
 
-        # Вычисление среднего арифметического оценок ревью
-        star_reviews = product.reviews.filter(grade__gt=0)
-        list_reviews_count = []
-        grade = 0
-        for rev in star_reviews:
-            list_reviews_count.append(int(rev.grade))
-        if list_reviews_count:
-            grade = math.ceil(sum(list_reviews_count) / len(list_reviews_count))
-        context["grade"] = grade
-
         if self.request.user.is_authenticated:
             context["review_form"] = ReviewForms
             context["reviews"] = reviews
@@ -103,7 +93,7 @@ def login_registration(request):
 
 
 def user_login(request):
-    """ Аутентификация пользователя """
+    """Аутентификация пользователя"""
     form = UserAuthenticatedForm(data=request.POST)
     if form.is_valid():
         user = form.get_user()
@@ -111,18 +101,20 @@ def user_login(request):
         messages.success(request, "Вы успешно вошли в аккаунт", extra_tags="success")
         return redirect("index")
     else:
-        messages.error(request, "Не верное имя пользователя или пароль", extra_tags="danger")
+        messages.error(
+            request, "Не верное имя пользователя или пароль", extra_tags="danger"
+        )
         return redirect("login_registration")
 
 
 def user_logout(request):
-    """ Выход пользователя """
+    """Выход пользователя"""
     logout(request)
     return redirect("index")
 
 
 def user_registration(request):
-    """ Регистрация пользователя """
+    """Регистрация пользователя"""
     form = UserRegisterForm(request.POST)
     if form.is_valid():
         form.save()
@@ -135,7 +127,7 @@ def user_registration(request):
 
 
 def save_review(request, product_pk):
-    """ Сохранение отзыва """
+    """Сохранение отзыва"""
     form = ReviewForms(data=request.POST)
     if form.is_valid():
         review = form.save(commit=False)
@@ -146,3 +138,21 @@ def save_review(request, product_pk):
         messages.success(request, "Вы успешно оставили отзыв", extra_tags="success")
 
         return redirect("product_page", product.slug)
+
+
+def save_favorite_products(request, product_slug):
+    """Добавление или удаление товаров с избранных"""
+
+    user = request.user if request.user.is_authenticated else None
+    if user:
+        product = Product.objects.get(slug=product_slug)
+        favorite_products = FavoriteProducts.objects.filter(user=user)
+        if product in [i.product for i in favorite_products]:
+            fav_product = FavoriteProducts.objects.get(user=user, product=product)
+            fav_product.delete()
+        else:
+            FavoriteProducts.objects.create(user=user, product=product)
+
+        # Узнаем с какой страницы пришел пользователь а если не найдет перенаправим на нужную страницу
+        next_page = request.META.get("HTTP_REFERER", "category_detail")
+        return redirect(next_page)
