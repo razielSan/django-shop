@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 
 class Category(models.Model):
+    """Категории продуктов"""
+
     title = models.CharField(
         max_length=150,
         verbose_name="Имя категории",
@@ -46,6 +48,8 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """Модель для продуктов"""
+
     title = models.CharField(
         max_length=250,
         verbose_name="Наименование товара",
@@ -105,6 +109,8 @@ class Product(models.Model):
 
 
 class Galery(models.Model):
+    """Модель для изображения продуктов"""
+
     image = models.ImageField(upload_to="products/", verbose_name="Изображение")
     product = models.ForeignKey(
         Product,
@@ -183,7 +189,8 @@ class FavoriteProducts(models.Model):
 
 
 class Mail(models.Model):
-    """ Почтовая рассылка """
+    """Почтовая рассылка"""
+
     email = models.EmailField(unique=True)
     user = models.ForeignKey(
         User,
@@ -195,3 +202,103 @@ class Mail(models.Model):
     class Meta:
         verbose_name = "Почта"
         verbose_name_plural = "Почты"
+
+
+class Customer(models.Model):
+    """Контактная информация заказчика"""
+
+    user = models.OneToOneField(
+        User, models.SET_NULL, blank=True, null=True, verbose_name="Пользователь"
+    )
+    # Данные пользователя на которого делается заказ
+    first_name = models.CharField(max_length=250, verbose_name="Имя")
+    last_name = models.CharField(max_length=250, verbose_name="Фамилия")
+    email = models.EmailField(verbose_name="Почта")
+    phone = models.CharField(max_length=250, verbose_name="Телефон")
+
+    def __str__(self):
+        return self.first_name
+
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+
+
+class Order(models.Model):
+    """Корзина"""
+
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Пользователь",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания",
+    )
+    is_completed = models.BooleanField(
+        default=False,
+        verbose_name="Завершен",
+    )
+    shipping = models.BooleanField(default=True, verbose_name="Доставка")
+
+    def __str__(self):
+        return str(self.pk)
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
+    @property
+    def get_cart_total_price(self):
+        """Для получения суммы товаров с корзины"""
+        list_ordered = self.ordered.all()
+        total_price = sum([i.get_total_price for i in list_ordered])
+        return total_price
+
+    @property
+    def get_cart_total_quantity(self):
+        """Для получения количеств товаров с корзины"""
+        list_ordered = self.ordered.all()
+        quantity = sum([i.quantity for i in list_ordered])
+        return quantity
+
+
+class OrderProduct(models.Model):
+    """Привязка продукта к корзине, строчки товаров"""
+
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.SET_NULL, null=True, related_name="ordered"
+    )
+    quantity = models.IntegerField(
+        default=0,
+        null=True,
+        blank=True,
+        verbose_name="Количество",
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Товар в заказе"
+        verbose_name_plural = "Товар в заказах"
+
+    @property
+    def get_total_price(self):
+        """
+        Чтобы модель сама могла подсчитать общую цену
+        пример: Вы купили 5 часов по цене 300$, суммарно будет 1500$
+        :return:
+        """
+        total_price = self.product.price * self.quantity
+        return total_price
+
+class ShippingAddress(models.Model):
+    """
+     Адреса доставки:
+     ** В учебных целях используется укороченный вариант
+     - На production лучше использовать отдельную модель для выпадающего списка городов и райнонов
+     - можно в аналогии с aliexpress вообще отдельной карточкой
+    """

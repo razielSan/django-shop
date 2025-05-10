@@ -194,10 +194,9 @@ def save_subscribers(request):
 
 
 def send_mail_to_subscribe(request):
-    """ Отправка писем подписчикам """
+    """Отправка писем подписчикам"""
 
     if request.method == "POST":
-        print("jdsdad")
         text = request.POST.get("text")
         mail_lists = Mail.objects.all()
         for user in mail_lists:
@@ -211,6 +210,9 @@ def send_mail_to_subscribe(request):
 
             print(f"Сообщение отправлено на почту {user.email}")
 
-
     context = {"title": "Спамер"}
     return render(request, "shop/send_email.html", context)
+
+
+def payments(request):
+    return render(request, "shop/payments.html")

@@ -28,6 +28,12 @@
 
         <!-- Template Stylesheet -->
         <link href="{% static 'shop/css/style.css' %}" rel="stylesheet">
+
+        {% block link %}
+        
+        {% endblock link %}
+
+       
     </head>
 
     {% include "components/_header.html" %}
