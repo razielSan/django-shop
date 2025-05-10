@@ -78,3 +78,8 @@ def get_favoriter_products(user):
     fav = FavoriteProducts.objects.filter(user=user)
     products = [i.product for i in fav]
     return products
+
+@register.simple_tag()
+def get_favorite_product(user, product):
+    product = FavoriteProducts.objects.filter(user=user, product=product)
+    return product

@@ -1,13 +1,21 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from shop.models import Product, Category, Galery, Review
+from shop.models import Product, Category, Galery, Review, Mail
 
 
 class GaleryInline(admin.TabularInline):
     fk_name = "product"
     model = Galery
     extra = 1
+
+
+@admin.register(Mail)
+class MailAdmin(admin.ModelAdmin):
+    """Почтовые подписки"""
+
+    list_display = ("pk", "email", "user")
+    readonly_fields = ("email", "user")
 
 
 @admin.register(Category)

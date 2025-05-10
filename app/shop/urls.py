@@ -14,5 +14,8 @@ urlpatterns = [
     path("user/login", views.user_login, name="user_login"),
     path("user/logout", views.user_logout, name="user_logout"),
     path("save_review/<int:product_pk>/", views.save_review, name="save_review"),
-    path("add_favorite/<slug:product_slug>/", views.save_favorite_products, name="add_favorite")
+    path("add_favorite/<slug:product_slug>/", views.save_favorite_products, name="add_favorite"),
+    path("user_favorits/", views.FavoriteProductsView.as_view(), name="favorite_product_page"),
+    path("save_email/", views.save_subscribers, name="mail_distribution"),
+    path("send_email/", views.send_mail_to_subscribe, name="send_email")
 ]

@@ -1,12 +1,14 @@
-import math
-
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.utils import IntegrityError
+from django.core.mail import send_mail
 
-from shop.models import Category, Product, FavoriteProducts
+from shop.models import Category, Product, FavoriteProducts, Mail
 from shop.forms import UserAuthenticatedForm, UserRegisterForm, ReviewForms
+from config import settings
 
 
 class Index(ListView):
@@ -156,3 +158,59 @@ def save_favorite_products(request, product_slug):
         # Узнаем с какой страницы пришел пользователь а если не найдет перенаправим на нужную страницу
         next_page = request.META.get("HTTP_REFERER", "category_detail")
         return redirect(next_page)
+    else:
+        return redirect("user_registration")
+
+
+class FavoriteProductsView(LoginRequiredMixin, ListView):
+    """Для вывода избранных на страницу"""
+
+    model = FavoriteProducts
+    context_object_name = "products"
+    template_name = "shop/favorite_products.html"
+    login_url = "login_registration"
+
+    def get_queryset(self):
+        """Получаем товары конкретного пользователя"""
+        favs = FavoriteProducts.objects.filter(user=self.request.user)
+        products = [i.product for i in favs]
+        return products
+
+
+def save_subscribers(request):
+    """Собиратель почтовых адресов"""
+    email = request.POST.get("email")
+    user = request.user if request.user.is_authenticated else None
+    if email:
+        try:
+            Mail.objects.create(email=email, user=user)
+            messages.success(
+                request, "Вы успешно подписались на рассылку", extra_tags="success"
+            )
+        except IntegrityError as err:
+            messages.error(request, "Такая почта уже существует", extra_tags="danger")
+
+    return redirect("index")
+
+
+def send_mail_to_subscribe(request):
+    """ Отправка писем подписчикам """
+
+    if request.method == "POST":
+        print("jdsdad")
+        text = request.POST.get("text")
+        mail_lists = Mail.objects.all()
+        for user in mail_lists:
+            send_mail(
+                subject="У нас новая акция",
+                message=text,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            print(f"Сообщение отправлено на почту {user.email}")
+
+
+    context = {"title": "Спамер"}
+    return render(request, "shop/send_email.html", context)

@@ -1,0 +1,20 @@
+                <!-- Newsletter Start -->
+                <div class="newsletter">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h1>Подпишись и всегда будь в курсе событий</h1>
+                            </div>
+                            <div class="col-md-6">
+                                <form action="{% url 'mail_distribution' %}" method="post" novalidate>
+                                    {% csrf_token %}
+                                        <div class="form">
+                                            <input name="email" type="email" value="Почтовый адрес">
+                                            <button class="btn btn-primary" type="submit">Отпр</button>   
+                                        </div>                            
+                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Newsletter End -->    
