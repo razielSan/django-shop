@@ -19,4 +19,6 @@ urlpatterns = [
     path("save_email/", views.save_subscribers, name="mail_distribution"),
     path("send_email/", views.send_mail_to_subscribe, name="send_email"),
     path("payments/", views.payments, name="payments"),
+    path("cart/", views.cart, name="cart"),
+    path("to-cart/<int:product_id>/<str:action>/", views.to_cart, name="to_cart"),
 ]

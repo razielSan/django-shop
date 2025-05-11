@@ -1,7 +1,17 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from shop.models import Product, Category, Galery, Review, Mail
+from shop.models import (
+    Product,
+    Category,
+    Galery,
+    Review,
+    Mail,
+    Order,
+    OrderProduct,
+    Customer,
+    ShippingAddress,
+)
 
 
 class GaleryInline(admin.TabularInline):
@@ -68,5 +78,40 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ["text", "author", "product", "created_at"]
     readonly_fields = ["text", "author", "created_at"]
 
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """Корзинка"""
+
+    list_display = ["customer", "created_at", "is_completed", "shipping"]
+    readonly_fields = ["customer", "is_completed", "shipping"]
+    list_filter = ["customer", "is_completed"]
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    """Заказчики"""
+
+    list_display = ["user", "first_name", "last_name", "email", "phone"]
+    readonly_fields = ["user", "first_name", "last_name", "email", "phone"]
+    list_filter = ["user"]
+
+
+@admin.register(OrderProduct)
+class OrderProductAdmin(admin.ModelAdmin):
+    """Товара в заказах"""
+
+    list_display = ["product", "order", "quantity", "added_at"]
+    readonly_fields = ["product", "order", "quantity", "added_at"]
+    list_filter = ["product"]
+
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    """Адреса доставки"""
+
+    list_display = ["customer", "order", "city", "street", "state", "created_at"]
+    readonly_fields = ["customer", "order", "city", "street", "state", "created_at"]
+    list_filter = ["customer"]
 
 admin.site.register(Galery)

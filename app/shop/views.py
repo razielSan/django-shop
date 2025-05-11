@@ -216,3 +216,12 @@ def send_mail_to_subscribe(request):
 
 def payments(request):
     return render(request, "shop/payments.html")
+
+
+def cart(request):
+    """ Страница корзины"""
+    return render(request, "shop/cart.html")
+
+def to_cart(request, product_id, action):
+    """ Добавление или удаление товара в корзину """
+    return render("cart")

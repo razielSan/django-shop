@@ -295,10 +295,35 @@ class OrderProduct(models.Model):
         total_price = self.product.price * self.quantity
         return total_price
 
+
 class ShippingAddress(models.Model):
     """
-     Адреса доставки:
-     ** В учебных целях используется укороченный вариант
-     - На production лучше использовать отдельную модель для выпадающего списка городов и райнонов
-     - можно в аналогии с aliexpress вообще отдельной карточкой
+    Адреса доставки:
+    ** В учебных целях используется укороченный вариант
+    - На production лучше использовать отдельную модель для выпадающего списка городов и райнонов
+    - можно в аналогии с aliexpress вообще отдельной карточкой
     """
+
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    city = models.CharField(max_length=250)
+    state = models.CharField(max_length=250)
+    street = models.CharField(max_length=250)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    def __str__(self):
+        return self.street
+
+    class Meta:
+        verbose_name = "Адрес доставки"
+        verbose_name_plural = "Адреса доставки"
