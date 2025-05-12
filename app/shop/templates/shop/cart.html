@@ -11,7 +11,29 @@
         <div class="cart-page">
             <div class="container-fluid">
                 <div class="row">
-                    {% include "shop/components/_cart_row.html" %}
+                    <div class="col-lg-8">
+                        <div class="cart-page-inner">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="align-middle">
+                                        {% for order in order_products  %}
+                                            {% include "shop/components/_cart_row.html" %}                                        
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-lg-4">
                         <div class="cart-page-inner">
                             <div class="row">

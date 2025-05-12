@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 
 from shop.models import Category, Product, FavoriteProducts, Mail
 from shop.forms import UserAuthenticatedForm, UserRegisterForm, ReviewForms
+from shop.utils import CartForAuthenticatedUser, get_cart_data
 from config import settings
 
 
@@ -219,9 +220,21 @@ def payments(request):
 
 
 def cart(request):
-    """ Страница корзины"""
-    return render(request, "shop/cart.html")
+    """Страница корзины"""
+    cart_info = get_cart_data(request)
+    context = {
+        "order": cart_info["order"],
+        "order_products": cart_info["order_products"],
+        "cart_total_quantity": cart_info["cart_total_quantity"],
+        "cart_total_price": cart_info["cart_total_price"],
+    }
+    return render(request, "shop/cart.html", context)
+
 
 def to_cart(request, product_id, action):
-    """ Добавление или удаление товара в корзину """
-    return render("cart")
+    """Добавление или удаление товара в корзину"""
+    if request.user.is_authenticated:
+        CartForAuthenticatedUser(request, product_id, action)
+        return redirect("cart")
+    messages.error(request, "Авторизируйтесь чтобы совершать покупки", extra_tags="danger")
+    return redirect("login_registration ")

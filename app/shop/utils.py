@@ -18,8 +18,44 @@ class CartForAuthenticatedUser:
         cart_total_price = order.get_cart_total_price
 
         return {
-            "order": order,
-            "order_products": order_products,
-            "cart_total_quantity": cart_total_quantity,
-            "cart_total_price": cart_total_price,
+            "order": order,  # ID корзинки
+            "order_products": order_products,  # QuerySeet обьект товаров в корзинке
+            "cart_total_quantity": cart_total_quantity,  # Общее количство товаро в корзинке
+            "cart_total_price": cart_total_price,  # Общая стоимость товаров в корзине
         }
+
+    def add_or_delete(self, product_id, action):
+        """Добавление и удаление товара по нажатию на плюс или минус"""
+        order = self.get_cart_info().get("order")
+        product = Product.objects.get(pk=product_id)
+        order_product, created = OrderProduct.objects.get_or_create(
+            order=order,
+            product=product
+        )
+        if action == "add" and product.quantity > 0:
+            order_product.quantity += 1
+            product.quantity -= 1
+        elif action == "delete":
+            order_product.quantity -= 1
+            product.quantity -= 1
+        elif action == "remove":
+            product.quantity += order_product.quantity
+            order_product.quantity -= order_product.quantity
+        elif order_product.quantity < 0:
+            order_product.delete()
+
+        product.save()
+        order_product.save()
+
+
+def get_cart_data(request):
+    """ Вывод товар с корзины на страничку """
+    cart = CartForAuthenticatedUser(request=request)
+    cart_info = cart.get_cart_info()
+
+    return {
+        "order": cart_info["order"],
+        "order_products": cart_info["order_products"],
+        "cart_total_quantity": cart_info["cart_total_quantity"],
+        "cart_total_price": cart_info["cart_total_price"],
+    }
