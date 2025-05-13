@@ -7,7 +7,13 @@ from django.db.utils import IntegrityError
 from django.core.mail import send_mail
 
 from shop.models import Category, Product, FavoriteProducts, Mail
-from shop.forms import UserAuthenticatedForm, UserRegisterForm, ReviewForms
+from shop.forms import (
+    UserAuthenticatedForm,
+    UserRegisterForm,
+    ReviewForms,
+    CustomerForm,
+    ShippingForm,
+)
 from shop.utils import CartForAuthenticatedUser, get_cart_data
 from config import settings
 
@@ -215,20 +221,39 @@ def send_mail_to_subscribe(request):
     return render(request, "shop/send_email.html", context)
 
 
-def payments(request):
-    return render(request, "shop/payments.html")
-
-
-def cart(request):
-    """Страница корзины"""
+def checkout(request):
+    """Оформление заказа"""
     cart_info = get_cart_data(request)
     context = {
         "order": cart_info["order"],
         "order_products": cart_info["order_products"],
         "cart_total_quantity": cart_info["cart_total_quantity"],
-        "cart_total_price": cart_info["cart_total_price"],
+        "customer_form": CustomerForm(),
+        "shipping_form": ShippingForm(),
+        "title": "Оформление заказа",
     }
-    return render(request, "shop/cart.html", context)
+    return render(request, "shop/checkout.html", context)
+
+
+def payments(request):
+    return render(request, "shop/payments.html")
+
+def cart(request):
+    """Страница корзины"""
+    if request.user.is_authenticated:
+        cart_info = get_cart_data(request)
+        context = {
+            "order": cart_info["order"],
+            "order_products": cart_info["order_products"],
+            "cart_total_quantity": cart_info["cart_total_quantity"],
+            "cart_total_price": cart_info["cart_total_price"],
+            "title": "Корзина",
+        }
+        return render(request, "shop/cart.html", context)
+    messages.error(
+        request, "Авторизируйтесь чтобы совершать покупки", extra_tags="danger"
+    )
+    return redirect("login_registration")
 
 
 def to_cart(request, product_id, action):
@@ -236,5 +261,7 @@ def to_cart(request, product_id, action):
     if request.user.is_authenticated:
         CartForAuthenticatedUser(request, product_id, action)
         return redirect("cart")
-    messages.error(request, "Авторизируйтесь чтобы совершать покупки", extra_tags="danger")
+    messages.error(
+        request, "Авторизируйтесь чтобы совершать покупки", extra_tags="danger"
+    )
     return redirect("login_registration ")

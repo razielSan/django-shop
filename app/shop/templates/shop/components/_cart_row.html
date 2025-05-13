@@ -6,14 +6,19 @@
                                                 </div>
                                             </td>
                                             <td>${{ order.product.price }}</td>
+                                                <td>
+                                                        {% if "cart" in request.path %}
+                                                            {% if order.product.quantity > -1  %}
+                                                                <a href="{% url 'to_cart' order.product.pk "delete" %}"><i class="fas fa-caret-left"></i></a>                                                    
+                                                            {% endif %}
+                                                            {{ order.quantity}} 
+                                                            <a href="{% url 'to_cart' order.product.pk "add" %}"><i class="fas fa-caret-right"></i></a>                                                                                                    
+                                                        {% endif %}
+            
+                                                </td>
+                                            <td>${{ order.get_total_price }}</td>
                                             <td>
-                                                <div class="qty">
-                                                    <button class="btn-minus"><i class="fa fa-minus"></i></button>
-                                                    <input type="text" value="{{ cart_total_quantity }}">
-                                                    <button class="btn-plus"><i class="fa fa-plus"></i></button>
-                                                </div>
+                                                <a href="{% url 'to_cart' order.product.pk 'remove' %}"><i class="fa fa-trash"></i></a> 
                                             </td>
-                                            <td>${{ cart_total_price }}</td>
-                                            <td><button><i class="fa fa-trash"></i></button></td>
                                         </tr>
 
