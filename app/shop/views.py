@@ -1,3 +1,4 @@
+import stripe
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth import login, logout
@@ -5,8 +6,18 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.utils import IntegrityError
 from django.core.mail import send_mail
+from django.urls import reverse
+from django.core import paginator
 
-from shop.models import Category, Product, FavoriteProducts, Mail
+from shop.models import (
+    Category,
+    Product,
+    FavoriteProducts,
+    Mail,
+    Customer,
+    ShippingAddress,
+    Order,
+)
 from shop.forms import (
     UserAuthenticatedForm,
     UserRegisterForm,
@@ -39,23 +50,26 @@ class Index(ListView):
 
 
 class SubCategeries(ListView):
+    """ Вывод подкатегорий на отдельной странице """
+    paginate_by = 3
     model = Product
     context_object_name = "products"
     template_name = "shop/category_page.html"
 
     def get_queryset(self):
-
+        print(222222)
         type_field = self.request.GET.get("type")
+        print(self.kwargs, "----------")
+
         if type_field:
-            products = Product.objects.filter(category__slug=type_field)[:3]
+            products = Product.objects.filter(category__slug=type_field)
             return products
         parent_category = Category.objects.get(slug=self.kwargs["slug"])
         sub = parent_category.subcategories.all()
-        products = Product.objects.filter(category__in=sub).order_by("?")[:3]
-
+        products = Product.objects.filter(category__in=sub)
         sorted_field = self.request.GET.get("sort")
         if sorted_field:
-            products = products.order_by(sorted_field)[:3]
+            products = products.order_by(sorted_field)
 
         return products
 
@@ -235,8 +249,6 @@ def checkout(request):
     return render(request, "shop/checkout.html", context)
 
 
-def payments(request):
-    return render(request, "shop/payments.html")
 
 def cart(request):
     """Страница корзины"""
@@ -265,3 +277,60 @@ def to_cart(request, product_id, action):
         request, "Авторизируйтесь чтобы совершать покупки", extra_tags="danger"
     )
     return redirect("login_registration ")
+
+
+def create_checkout_session(request):
+    """Оплат на stripe"""
+    print("-" * 50)
+    print(settings.STRIPE_SECRET_KEY)
+    print("------" *39)
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method == "POST":
+        print("hello world")
+        user_cart = CartForAuthenticatedUser(request)
+        cart_info = user_cart.get_cart_info()
+        customer_form = CustomerForm(data=request.POST)
+        if customer_form.is_valid():
+            customer = Customer.objects.get(user=request.user)
+            customer.first_name = customer_form.cleaned_data["first_name"]
+            customer.last_name = customer_form.cleaned_data["last_name"]
+            customer.email = customer_form.cleaned_data["email"]
+            customer.phone = customer_form.cleaned_data["phone"]
+            customer.save()
+        shipping_form = ShippingForm(data=request.POST)
+        if shipping_form.is_valid():
+            address = shipping_form.save(commit=False)
+            address.customer = Customer.objects.get(user=request.user)
+            address.order = cart_info["order"]
+            address.save()
+
+        total_price = cart_info["cart_total_price"]
+        total_quantity = cart_info["cart_total_quantity"]
+
+        session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "usd",
+                        "product_data": {"name": "Товары тестовы"},
+                        "unit_amount": int(total_price * 100),
+                    },
+                    "quantity": total_quantity,
+                }
+            ],
+            mode="payment",
+            success_url=request.build_absolute_uri(reverse("success")),
+            cancel_url=request.build_absolute_uri(reverse("success")),
+        )
+        print("+++=" * 20)
+        print(session.url)
+        print("+++" * 20)
+        return redirect(session.url, 303)
+
+
+def success_payment(request):
+    """Оплата прошла успшено"""
+    user_cart = CartForAuthenticatedUser(request)
+    user_cart.clear()
+    messages.success(request, "Оплата прошла успешно", extra_tags="success")
+    return render(request, "shop/success.html")

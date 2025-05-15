@@ -10,6 +10,10 @@ backports-zoneinfo==0.2.1
     # via django
 black==24.8.0
     # via -r requirements.in
+certifi==2025.4.26
+    # via requests
+charset-normalizer==3.4.2
+    # via requests
 click==8.1.8
     # via black
 colorama==0.4.6
@@ -22,6 +26,8 @@ django-jazzmin==3.0.1
     # via -r requirements.in
 flake8==7.1.2
     # via -r requirements.in
+idna==3.10
+    # via requests
 mccabe==0.7.0
     # via flake8
 mypy-extensions==1.1.0
@@ -46,15 +52,22 @@ pyflakes==3.2.0
     # via flake8
 python-dotenv==1.0.1
     # via -r requirements.in
+requests==2.32.3
+    # via stripe
 snowballstemmer==2.2.0
     # via pydocstyle
 sqlparse==0.5.3
     # via django
+stripe==12.1.0
+    # via -r requirements.in
 tomli==2.2.1
     # via black
 typing-extensions==4.13.2
     # via
     #   asgiref
     #   black
+    #   stripe
 tzdata==2025.2
     # via django
+urllib3==2.2.3
+    # via requests

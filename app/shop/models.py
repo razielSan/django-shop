@@ -253,7 +253,7 @@ class Order(models.Model):
 
     @property
     def get_cart_total_price(self):
-        """Для получения суммы товаров с корзины"""
+        """Для получения общей цены товаров с корзины"""
         list_ordered = self.ordered.all()
         total_price = sum([i.get_total_price for i in list_ordered])
         return total_price
@@ -300,7 +300,7 @@ class ShippingAddress(models.Model):
     """
     Адреса доставки:
     ** В учебных целях используется укороченный вариант
-    - На production лучше использовать отдельную модель для выпадающего списка городов и райнонов
+    - На production лучше использовать отдельную модель для выпадающего списка городов и районов
     - можно в аналогии с aliexpress вообще отдельной карточкой
     """
 

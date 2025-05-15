@@ -48,6 +48,13 @@ class CartForAuthenticatedUser:
         if order_product.quantity < 1:
             order_product.delete()
 
+    def clear(self):
+        """ Удаление всех товаров с корзины """
+        order = self.get_cart_info()["order"]
+        order_products = order.ordered.all()
+        for product in order_products:
+            product.delete()
+        order.save()
 
 
 def get_cart_data(request):
