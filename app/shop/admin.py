@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from modeltranslation.admin import TranslationAdmin
 
 from shop.models import (
     Product,
@@ -29,8 +30,8 @@ class MailAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["title", "parent", "get_product_count"]
+class CategoryAdmin(TranslationAdmin):
+    list_display = ["pk", "title", "parent", "get_product_count"]
     prepopulated_fields = {"slug": ("title",)}
 
     def get_product_count(self, obj):
@@ -40,7 +41,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(TranslationAdmin):
     list_display = [
         "pk",
         "title",
@@ -113,5 +114,6 @@ class ShippingAddressAdmin(admin.ModelAdmin):
     list_display = ["customer", "order", "city", "street", "state", "created_at"]
     readonly_fields = ["customer", "order", "city", "street", "state", "created_at"]
     list_filter = ["customer"]
+
 
 admin.site.register(Galery)

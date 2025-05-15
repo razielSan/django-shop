@@ -25,6 +25,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "modeltranslation",
     "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -43,6 +44,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -113,6 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
+
 LANGUAGE_CODE = "ru"
 
 TIME_ZONE = "UTC"
@@ -152,3 +155,12 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 # STRIPE
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+
+
+# LANGUAGES
+
+gettext = lambda s: s
+LANGUAGES = (
+    ("ru", gettext("Russian")),
+    ("en", gettext("English")),
+)

@@ -57,9 +57,7 @@ class SubCategeries(ListView):
     template_name = "shop/category_page.html"
 
     def get_queryset(self):
-        print(222222)
         type_field = self.request.GET.get("type")
-        print(self.kwargs, "----------")
 
         if type_field:
             products = Product.objects.filter(category__slug=type_field)

@@ -22,7 +22,10 @@ django==4.2.20
     # via
     #   -r requirements.in
     #   django-jazzmin
+    #   django-modeltranslation
 django-jazzmin==3.0.1
+    # via -r requirements.in
+django-modeltranslation==0.18.11
     # via -r requirements.in
 flake8==7.1.2
     # via -r requirements.in
@@ -66,6 +69,7 @@ typing-extensions==4.13.2
     # via
     #   asgiref
     #   black
+    #   django-modeltranslation
     #   stripe
 tzdata==2025.2
     # via django
