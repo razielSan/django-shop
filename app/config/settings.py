@@ -164,3 +164,7 @@ LANGUAGES = (
     ("ru", gettext("Russian")),
     ("en", gettext("English")),
 )
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, "locale"),
+)
