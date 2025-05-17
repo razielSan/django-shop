@@ -1,15 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
-from shop.models import (
-    Category,
-    Product,
-    Galery,
-    Review,
-    Customer,
-    ShippingAddress
-)
+from shop.models import Category, Product, Galery, Review, Customer, ShippingAddress
 
 
 class UserAuthenticatedForm(AuthenticationForm):
@@ -17,12 +11,12 @@ class UserAuthenticatedForm(AuthenticationForm):
 
     username = forms.CharField(
         widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Логин"},
+            attrs={"class": "form-control", "placeholder": _("Логин")},
         )
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "Пароль"},
+            attrs={"class": "form-control", "placeholder": _("Пароль")},
         )
     )
 
@@ -32,14 +26,17 @@ class UserRegisterForm(UserCreationForm):
 
     password1 = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "Введите пароль"},
+            attrs={
+                "class": "form-control",
+                "placeholder": _("Введите пароль"),
+            },
         )
     )
     password2 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Подтвердите пароль",
+                "placeholder": _("Подтвердите пароль"),
             }
         )
     )
@@ -54,13 +51,13 @@ class UserRegisterForm(UserCreationForm):
             "username": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Имя пользователя",
+                    "placeholder": _("Имя пользователя"),
                 }
             ),
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Почта",
+                    "placeholder": _("Почта"),
                 }
             ),
         }
@@ -79,13 +76,13 @@ class ReviewForms(forms.ModelForm):
             "text": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ваш отзыв.....",
+                    "placeholder": _("Ваш отзыв....."),
                 }
             ),
             "grade": forms.Select(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ваша оценка",
+                    "placeholder": _("Ваша оценка"),
                 }
             ),
         }
@@ -106,32 +103,29 @@ class CustomerForm(forms.ModelForm):
             "first_name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Вася",
+                    "placeholder": _("Вася"),
                 }
             ),
             "last_name": forms.TextInput(
-                attrs={
-                    "class": "form-control",
-                    "placeholder": "Пупкин"
-                }
+                attrs={"class": "form-control", "placeholder": _("Пупкин")}
             ),
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "vasya@pupkin.uz",
+                    "placeholder": _("vasya@pupkin.uz"),
                 }
             ),
             "phone": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "+99513437832"
+                    "placeholder": "+99513437832",
                 }
-            )
+            ),
         }
 
 
 class ShippingForm(forms.ModelForm):
-    """ Адрес Доставки """
+    """Адрес Доставки"""
 
     class Meta:
         model = ShippingAddress
@@ -140,19 +134,19 @@ class ShippingForm(forms.ModelForm):
             "city": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Киев",
+                    "placeholder": _("Киев"),
                 }
             ),
             "state": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Яшнабад"
+                    "placeholder": _("Яшнабад"),
                 }
             ),
             "street": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Улица/Дом/Квартира....."
+                    "placeholder": _("Улица/Дом/Квартира....."),
                 }
             ),
         }
